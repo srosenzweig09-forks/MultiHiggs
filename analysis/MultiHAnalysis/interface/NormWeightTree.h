@@ -49,6 +49,7 @@ public:
   void read_pdf_weight   (NanoAODTree &nat);
   void read_scale_weight (NanoAODTree &nat);
   void read_ps_weight    (NanoAODTree &nat);
+  void normalize_gen_weight(double genEventSumw);
 
   // specific initialisations
   void init_gen_weight   ();

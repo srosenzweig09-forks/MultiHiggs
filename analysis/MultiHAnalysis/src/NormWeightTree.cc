@@ -199,3 +199,7 @@ void NormWeightTree::add_weight(std::string wname, std::vector <std::string> wsy
     tree_->Branch(wsystsname.at(is).c_str(), &(extra_weights_.getVal(wname).syst_val.at(is)));
   }
 }
+
+void NormWeightTree::normalize_gen_weight(double genEventSumw){
+  gen_w_.w /= genEventSumw;
+}
