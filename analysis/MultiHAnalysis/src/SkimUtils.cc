@@ -40,12 +40,17 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   ot.Run      = *ei.Run;
   ot.LumiSec  = *ei.LumiSec;
   ot.Event    = *ei.Event;
+  ot.genEventSumw = *ei.genEventSumw;
 
   if(ei.n_other_pv)     ot.n_other_pv      = *ei.n_other_pv;
   if(ei.n_pu)           ot.n_pu            = *ei.n_pu;
   if(ei.n_true_int)     ot.n_true_int      = *ei.n_true_int;
   if(ei.rhofastjet_all) ot.rhofastjet_all  = *ei.rhofastjet_all;
   if(ei.PFHT)           ot.PFHT            = *ei.PFHT;
+  if(ei.HEMWeight)      ot.HEMWeight       = *ei.HEMWeight;
+  if(ei.PUIDWeight)     ot.PUIDWeight      = *ei.PUIDWeight;
+  if(ei.PUIDWeight_up)  ot.PUIDWeight_up   = *ei.PUIDWeight_up;
+  if(ei.PUIDWeight_down)ot.PUIDWeight_down = *ei.PUIDWeight_down;
   if(ei.lhe_ht)         ot.lhe_ht          = *ei.lhe_ht;
   if(ei.n_jet)          ot.n_jet           = *ei.n_jet;
   if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
