@@ -109,7 +109,7 @@ if __name__ == "__main__":
     # Default values
     VERBOSE           = True
     DATASET           = "NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8"
-    CAMPAIGN          = "RunIISummer20UL18"
+    CAMPAIGN          = "RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1"
     REDIRECTOR        = "root://cmsxrootd.fnal.gov/"
     OVERWRITE         = False
     USAGE             = False

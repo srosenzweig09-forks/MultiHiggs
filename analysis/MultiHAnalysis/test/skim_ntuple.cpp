@@ -521,7 +521,7 @@ int main(int argc, char** argv) {
     throw std::runtime_error("The input file list is empty.");
 
   double genEventSumw_total = 0;
-  if (is_signal) {
+  if (!is_data) {
     TChain rch("Runs");
     int rnfiles = su::appendFromFileList(&rch, opts["input"].as<string>());
     TTreeReader rch_reader(&rch);
@@ -529,6 +529,7 @@ int main(int argc, char** argv) {
     while (rch_reader.Next()) {
       genEventSumw_total += *genEventSumw;
     }
+    cout << "Total genEventSumw: " << genEventSumw_total << endl;
   }
 
   const string outputFileName = opts["output"].as<string>();
@@ -741,11 +742,11 @@ int main(int argc, char** argv) {
 
   string L1PrefiringSFMethod = config.readStringOpt("parameters::L1PrefiringSFMethod");
 
-  if (year != "2018" && L1PrefiringSFMethod == "Standard") {
-    ot.userFloat("L1PreFiringWeight_Nom") = *(nat.L1PreFiringWeight_Nom);
-    ot.userFloat("L1PreFiringWeight_Up")  = *(nat.L1PreFiringWeight_Up);
-    ot.userFloat("L1PreFiringWeight_Down")  = *(nat.L1PreFiringWeight_Dn);
-  }
+  // if (year != "2018" && L1PrefiringSFMethod == "Standard") {
+  //   ot.userFloat("L1PreFiringWeight_Nom") = *(nat.L1PreFiringWeight_Nom);
+  //   ot.userFloat("L1PreFiringWeight_Up")  = *(nat.L1PreFiringWeight_Up);
+  //   ot.userFloat("L1PreFiringWeight_Down")  = *(nat.L1PreFiringWeight_Dn);
+  // }
 
   // ------------------------------------------------------------------
   skf->initialize_params_from_cfg(config);
@@ -801,6 +802,7 @@ int main(int argc, char** argv) {
       // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
       // cout << "... tree basket size (branch Run) : " << bsize  << endl;
     }
+    cout << "... processing event " << iEv << endl;
 
     // use the tree content to initialise weight tree in the first event
     if (iEv == 0 && !is_data && save_genw_tree) {
@@ -828,7 +830,6 @@ int main(int argc, char** argv) {
     //==========================================================
     if (!is_data && save_genw_tree) {
       nwt.read_weights(nat);
-      nwt.normalize_gen_weight(genEventSumw_total);
       nwt.fill();
       loop_timer.click("Norm weight read + fill");
     }
@@ -906,6 +907,7 @@ int main(int argc, char** argv) {
     ei.n_ele = selected_electrons.size();
     ei.ele_list = selected_electrons;
     histograms.get("n_ele", ";N Electrons;Events", 10, 0, 10).Fill(selected_electrons.size(), nwt);
+    
 
     bool applyEleVeto = config.readBoolOpt("configurations::applyEleVeto");
     bool applyEleSelection = config.readBoolOpt("configurations::applyEleSelection");
@@ -1057,6 +1059,7 @@ int main(int argc, char** argv) {
       //=======================================
       // Calculate trigger scale factor
       //=======================================
+      
       if (saveTrgSF) {
         if (trgEfficiencyCalculator_ != nullptr) {
           auto triggerScaleFactorDataAndMonteCarloEfficiency =
@@ -1077,6 +1080,7 @@ int main(int argc, char** argv) {
           }
         }
       }
+      
 
       //================================================
       // Proceed with the jets pairing
@@ -1109,8 +1113,8 @@ int main(int argc, char** argv) {
       if (selected_jets.size() < 6)
         continue;
 
-      if (!is_data) {skf->get_puid_sf(ei, all_jets, puid_sf_file, year);}
-      
+      if (!is_data && saveTrgSF) {skf->get_puid_sf(ei, all_jets, puid_sf_file, year);}
+
       if (btsf.reshaping_found) {
         btsf.compute_reshaping_sf(presel_jets, nat, ot);
       }
@@ -1138,6 +1142,7 @@ int main(int argc, char** argv) {
         }
       }
 
+      cout << "Checkpoint 1" << endl;
       //========================================
       // Apply trigger matching
       //========================================
@@ -1155,6 +1160,8 @@ int main(int argc, char** argv) {
         cutflow_Unweighted.add("Trigger matching");
         loop_timer.click("Trigger object - offline object matching");
       }
+
+      cout << "Checkpoint 2" << endl;
 
       //=======================================
       // Calculate trigger scale factor
@@ -1192,6 +1199,9 @@ int main(int argc, char** argv) {
       }
       skf->compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
+      
+      ei.genEventSumw = genEventSumw_total;
+
     }  // Closes sixb skimming
     else if ( skim_type == kttbar ) {
       if (presel_jets.size() < 6)
