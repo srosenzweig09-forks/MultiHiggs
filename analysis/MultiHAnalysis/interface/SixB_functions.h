@@ -2,6 +2,7 @@
 #define SIXB_FUNCTIONS_H
 
 #include "Skim_functions.h"
+#include "OutputTree.h"
 #include "EvalNN.h"
 
 class SixB_functions : public Skim_functions{
@@ -207,6 +208,11 @@ public:
   std::vector<Jet> select_sixb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
   std::vector<Jet> select_sixb_jets_maxbtag_highpT (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag);
 
+  ////////////////////////////////////////////////////
+  /// HYX reconstruction functions
+  ////////////////////////////////////////////////////
+  // void compute_scaleFactors_bTagReshaping (const std::vector<Jet> &jets, NanoAODTree& nat, OutputTree &ot, double event_weight);
+        
 
 private:
 	
