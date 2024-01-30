@@ -10,7 +10,8 @@ void BtagSF::init_reader(std::string tagger, std::string SFfile, OutputTree& ot)
   BTagCalibration btagCalibration(tagger, SFfile);
 
   bool wp_found = SFfile.find("wp") != string::npos;
-  bool reshaping_found = SFfile.find("reshaping") != string::npos;
+  reshaping_found = SFfile.find("reshaping") != string::npos;
+
 
   if (wp_found)
   {
@@ -113,7 +114,6 @@ void BtagSF::compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat
         for (const auto& jet : jets)
         {
             int jetFlavour = abs(get_property(jet, Jet_hadronFlavour));
-            cout << "jetFlavour = " << jetFlavour << endl;
             
             BTagEntry::JetFlavor jf = BTagEntry::FLAV_UDSG;
             if (jetFlavour == 5)
@@ -129,7 +129,7 @@ void BtagSF::compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat
             double w = btcr_[btagWP::shape]->eval_auto_bounds(sfname, jf, aeta, pt, b_score);
 
             // if (jetFlavour == 4)
-            //   cout << "Hadron flavor is 4, " << sfname << " = " << w << endl;
+              // cout << "Hadron flavor is 4, " << sfname << " = " << w << endl;
             
             // 0 is the default value for a missing line in the .csv file (e.g., an uncertainty available only for one flavour but not the others)
             // but there is not a way to check if the value was available or the default was returned
@@ -145,6 +145,7 @@ void BtagSF::compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat
         string sfbrname = "bSFshape_";
         sfbrname += sfname;
         // cout << "sfbrname = " << sfbrname << endl;
+        // cout << "bSF = " << bSF << endl;
         ot.userFloat(sfbrname) = bSF;
 
         // cout << ".. branch saved to OT" << endl;
