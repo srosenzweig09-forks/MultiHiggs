@@ -788,6 +788,9 @@ int main(int argc, char** argv) {
   Cutflow cutflow_Unweighted("h_cutflow_unweighted", "Unweighted selection cutflow");
   HistoCollection histograms;
 
+  //==========================================================
+  // Loop begins!
+  //==========================================================
   cout << "[INFO] Loop begins!" << endl;
   for (int iEv = 0; true; ++iEv) {
     if (maxEvts >= 0 && iEv >= maxEvts)
@@ -802,7 +805,6 @@ int main(int argc, char** argv) {
       // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
       // cout << "... tree basket size (branch Run) : " << bsize  << endl;
     }
-    cout << "... processing event " << iEv << endl;
 
     // use the tree content to initialise weight tree in the first event
     if (iEv == 0 && !is_data && save_genw_tree) {
@@ -1142,7 +1144,6 @@ int main(int argc, char** argv) {
         }
       }
 
-      cout << "Checkpoint 1" << endl;
       //========================================
       // Apply trigger matching
       //========================================
@@ -1160,8 +1161,6 @@ int main(int argc, char** argv) {
         cutflow_Unweighted.add("Trigger matching");
         loop_timer.click("Trigger object - offline object matching");
       }
-
-      cout << "Checkpoint 2" << endl;
 
       //=======================================
       // Calculate trigger scale factor
