@@ -205,6 +205,10 @@ for path in process.paths:
 	if path in ['lhe_step']: continue
 	getattr(process,path).insert(0, process.ProductionFilterSequence)
 
+#Setup FWK for multithreaded
+process.options.numberOfThreads=cms.untracked.uint32(2)
+process.options.numberOfStreams=cms.untracked.uint32(2)
+
 # customisation of the process.
 
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils

@@ -44,6 +44,8 @@ process.maxEvents = cms.untracked.PSet(
 #     secondaryFileNames = cms.untracked.vstring()
 # )
 
+process.source = cms.Source("EmptySource")
+
 process.options = cms.untracked.PSet(
 
 )
@@ -83,6 +85,10 @@ process.NANOEDMAODSIMoutput_step = cms.EndPath(process.NANOEDMAODSIMoutput)
 process.schedule = cms.Schedule(process.nanoAOD_step,process.endjob_step,process.NANOEDMAODSIMoutput_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
+
+#Setup FWK for multithreaded
+process.options.numberOfThreads=cms.untracked.uint32(2)
+process.options.numberOfStreams=cms.untracked.uint32(2)
 
 # customisation of the process.
 

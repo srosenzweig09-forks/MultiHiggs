@@ -90,6 +90,10 @@ process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,proces
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
+#Setup FWK for multithreaded
+process.options.numberOfThreads=cms.untracked.uint32(2)
+process.options.numberOfStreams=cms.untracked.uint32(0)
+
 # customisation of the process.
 
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils

@@ -110,6 +110,10 @@ process.schedule = cms.Schedule(process.digitisation_step,process.datamixing_ste
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
+#Setup FWK for multithreaded
+process.options.numberOfThreads=cms.untracked.uint32(2)
+process.options.numberOfStreams=cms.untracked.uint32(2)
+
 # customisation of the process.
 
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils

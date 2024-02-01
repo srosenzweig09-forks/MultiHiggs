@@ -45,6 +45,8 @@ process.maxEvents = cms.untracked.PSet(
 #     secondaryFileNames = cms.untracked.vstring()
 # )
 
+process.source = cms.Source("EmptySource")
+
 process.options = cms.untracked.PSet(
 
 )
@@ -181,6 +183,10 @@ process = addMonitoring(process)
 #do not add changes to your config after this point (unless you know what you are doing)
 from FWCore.ParameterSet.Utilities import convertToUnscheduled
 process=convertToUnscheduled(process)
+
+#Setup FWK for multithreaded
+process.options.numberOfThreads=cms.untracked.uint32(2)
+process.options.numberOfStreams=cms.untracked.uint32(2)
 
 # customisation of the process.
 
