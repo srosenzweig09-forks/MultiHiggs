@@ -19,7 +19,7 @@ echo "[INFO] ... will generate ${IN_NEVT} events"
 echo "[INFO] ... ouput folder is $IN_ONAME"
 
 SCRIPTSDIR=`pwd`
-MG5DIR=${CMSSW_BASE}/src/sixB/MadGraph/MG5_aMC_v2_6_5
+MG5DIR=${CMSSW_BASE}/src/MultiHiggs/MadGraph/MG5_aMC_v2_6_5
 
 echo "[INFO] Launching event generation with MadGraph"
 cd ${MG5DIR}/${PROCFOLDER}
