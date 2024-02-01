@@ -442,10 +442,6 @@ int main(int argc, char** argv) {
        po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false),
        "disable the storage of the genweight tree for normalizations")
       //
-      ("correct-HEM",
-      po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false),
-       "correct HEM15/16 issue in 2018C-D dataset")
-      //
       ("check-HEM",
       po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false),
        "check Run value to correct HEM15/16 issue in 2018B dataset")
@@ -477,7 +473,6 @@ int main(int argc, char** argv) {
   const string year = config.readStringOpt("parameters::year");
   const bool is_data = opts["is-data"].as<bool>();
   const bool is_signal = (is_data ? false : opts["is-signal"].as<bool>());
-  const bool correct_HEM = opts["correct-HEM"].as<bool>();
   const bool check_HEM = opts["check-HEM"].as<bool>();
 
   std::cout << "\033[1;34m Year            : \033[0m" << year << std::endl;
@@ -514,7 +509,6 @@ int main(int argc, char** argv) {
   ////////////////////////////////////////////////////////////////////////
 
   // Joining all the NANOAOD input file in a TChain in order to be used like an unique three
-
   TChain ch("Events");
   int nfiles = su::appendFromFileList(&ch, opts["input"].as<string>());
   if (nfiles == 0)
@@ -556,7 +550,6 @@ int main(int argc, char** argv) {
                 });
   NormWeightTree nwt;
   NanoAODTree nat(&ch);
-
 
   //---------------------------------------------------------------------
   // Trigger information
@@ -638,7 +631,6 @@ int main(int argc, char** argv) {
     std::cout << "\033[1;34m PUID Weights : \033[0m" << pu_weight_file << "\n" << std::endl;
   }
 
-
   // // just a test
   // nwt.add_weight("test1", {"test1_up", "test1_down"});
   // nwt.add_weight("test2", {"test2_A", "test2_B", "test2_C"});
@@ -685,10 +677,8 @@ int main(int argc, char** argv) {
 
   cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
   cout << "[INFO] ... the WPs are: (L/M/T) : ";
-  for (auto wp : btag_WPs) {cout << wp << " ";}
-  cout << endl;
-  //  << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2)
-      //  << endl;
+      for (auto wp : btag_WPs) {cout << wp << " ";}
+    cout << endl;
 
   BtagSF btsf;
   if (!is_data) {
@@ -741,12 +731,6 @@ int main(int argc, char** argv) {
   const Variation bjer_var = string_to_jer_variation(opts["bjer-shift-syst"].as<string>());
 
   string L1PrefiringSFMethod = config.readStringOpt("parameters::L1PrefiringSFMethod");
-
-  // if (year != "2018" && L1PrefiringSFMethod == "Standard") {
-  //   ot.userFloat("L1PreFiringWeight_Nom") = *(nat.L1PreFiringWeight_Nom);
-  //   ot.userFloat("L1PreFiringWeight_Up")  = *(nat.L1PreFiringWeight_Up);
-  //   ot.userFloat("L1PreFiringWeight_Down")  = *(nat.L1PreFiringWeight_Dn);
-  // }
 
   // ------------------------------------------------------------------
   skf->initialize_params_from_cfg(config);
@@ -832,6 +816,16 @@ int main(int argc, char** argv) {
     //==========================================================
     if (!is_data && save_genw_tree) {
       nwt.read_weights(nat);
+      // example to fill user weights
+      // auto& w1 = nwt.get_weight("test1");
+      // auto& w2 = nwt.get_weight("test2");
+      // auto& w3 = nwt.get_weight("test3");
+      // w1.w = iEv;
+      // w2.w = 10*iEv;
+      // w3.w = 100*iEv;
+      // w1.syst_val = {iEv + 1., iEv - 1.};
+      // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
+      // w3.syst_val = {};
       nwt.fill();
       loop_timer.click("Norm weight read + fill");
     }
@@ -843,7 +837,6 @@ int main(int argc, char** argv) {
     //====================================
     // Apply trigger
     //====================================
-
     if (applyTrg && !(nat.getTrgOr()))
       continue;
     cutflow.add("trigger", nwt);
@@ -909,7 +902,6 @@ int main(int argc, char** argv) {
     ei.n_ele = selected_electrons.size();
     ei.ele_list = selected_electrons;
     histograms.get("n_ele", ";N Electrons;Events", 10, 0, 10).Fill(selected_electrons.size(), nwt);
-    
 
     bool applyEleVeto = config.readBoolOpt("configurations::applyEleVeto");
     bool applyEleSelection = config.readBoolOpt("configurations::applyEleSelection");
@@ -959,7 +951,6 @@ int main(int argc, char** argv) {
     else if (is_data && year == "2018")
     {
       // skip events with jets in affected region
-      if (correct_HEM && skf->checkHEMissue(ei, all_jets)) {continue;}
       if (check_HEM){
         int run = (int) *ei.Run;
         bool HEMruns = (run == 319077 || run == 319310);
@@ -1061,7 +1052,6 @@ int main(int argc, char** argv) {
       //=======================================
       // Calculate trigger scale factor
       //=======================================
-      
       if (saveTrgSF) {
         if (trgEfficiencyCalculator_ != nullptr) {
           auto triggerScaleFactorDataAndMonteCarloEfficiency =
@@ -1083,7 +1073,6 @@ int main(int argc, char** argv) {
         }
       }
       
-
       //================================================
       // Proceed with the jets pairing
       //================================================
@@ -1208,7 +1197,9 @@ int main(int argc, char** argv) {
       cutflow.add("npresel_jets>=6", nwt);
       cutflow_Unweighted.add("npresel_jets>=6");
 
-      btsf.compute_reshaping_sf(presel_jets, nat, ot);
+      if (btsf.reshaping_found) {
+        btsf.compute_reshaping_sf(presel_jets, nat, ot);
+      }
       
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
@@ -1219,7 +1210,6 @@ int main(int argc, char** argv) {
 
       if (readCfgOptWithDefault<bool>(config, "configurations::saveSelected", false))
         ei.jet_list = selected_jets;
-
 
       cutflow.add("nselect_jets>=6", nwt);
       cutflow_Unweighted.add("nselect_jets>=6");
@@ -1239,7 +1229,9 @@ int main(int argc, char** argv) {
 	// Save all gen-level jets
 	ei.genjet_list = GenJets;
 
-  btsf.compute_reshaping_sf(presel_jets, nat, ot);
+  if (btsf.reshaping_found) {
+        btsf.compute_reshaping_sf(presel_jets, nat, ot);
+      }
 
 	std::vector<GenPart*> matched_quarks;
 	std::vector<GenJet> matched_genjets;
