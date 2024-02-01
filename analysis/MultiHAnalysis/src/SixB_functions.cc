@@ -527,7 +527,6 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
   stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
           return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
   ); // sort jet by deepjet score (highest to lowest)
-  
   return jets;
 }
 
