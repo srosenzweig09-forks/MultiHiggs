@@ -8,6 +8,7 @@ import os
 import sys
 import argparse
 import getpass
+import sys
 
 parser = argparse.ArgumentParser(description='Command line parser of skim options')
 parser.add_argument('--input'     ,  dest = 'input'     ,  help = 'input filelist'           ,  required = True        )
@@ -188,7 +189,8 @@ skim_base_commands = [
 ]
 skim_command = ' '.join(skim_base_commands)
 ## now forward all the other commands to skim_command
-skim_command += ' ' + ' '.join(unknown)
+if args.jes != "": args.jes = " --jes-shift-syst " + args.jes
+skim_command += ' ' + ' '.join(unknown) + ' ' + args.jes
 
 eosdest = '{}{}/output'. format(eos_server, odir_sample)
 
