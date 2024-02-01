@@ -2,6 +2,16 @@
 
 Please see the README.md in the root folder before attempting to run these skims if you haven't already. Once installation of the repo has been completed, follow these steps to set up the analysis code.
 
+
+```
+cmsrel CMSSW_10_6_28_patch2
+cd CMSSW_10_6_28_patch2/src
+cmsenv
+git cms-addpkg CommonTools/Utils CondFormats/JetMETObjects CondFormats/Serialization FWCore/MessageLogger FWCore/Utilities JetMETCorrections/Modules PhysicsTools/TensorFlow PhysicsTools/ONNXRuntime
+scram b -j 4
+git clone https://github.com/UF-HH/MultiHiggs
+cd MultiHiggs/analysis/MultiHAnalysis
+```
 ```
 source scripts/setup.sh
 make exe -j
